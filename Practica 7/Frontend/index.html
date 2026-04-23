@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <title>Tienda Geek PWA</title>
+    <style>
+        /* Diseño básico y moderno */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eceff1; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; text-align: center; }
+        select, input, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        button { background: #2c3e50; color: white; border: none; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        button:hover { background: #1a252f; }
+        .consola { background: #1e1e1e; color: #4CAF50; padding: 15px; border-radius: 6px; margin-top: 15px; font-family: monospace; min-height: 40px; text-align: left;}
+        .error { color: #ff5252; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>🛍️ Geek Shop</h2>
+        
+        <select id="categoria">
+            <option value="Lego">Lego</option>
+            <option value="TCG Pokemon">TCG Pokemon</option>
+            <option value="Albumes Kpop">Álbumes Kpop</option>
+            <option value="Gunpla (Modelos Armables)">Gunpla (Armables)</option>
+            <option value="Consolas Retro">Consolas Retro</option>
+        </select>
+        
+        <input type="number" id="precio" placeholder="Precio Base ($ MXN)" required>
+        
+        <select id="operacion">
+            <option value="ahorro">Calcular Ahorro</option>
+            <option value="envio">Calcular Envío</option>
+        </select>
+        
+        <button onclick="procesarPeticion()">Conectar al Servidor</button>
+
+        <div class="consola" id="pantalla-resultado">Esperando acción...</div>
+    </div>
+
+    <script>
+        // A. Registro del Service Worker (El motor de la PWA)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('✅ Service Worker registrado'))
+                    .catch(err => console.log('❌ Error en Service Worker', err));
+            });
+        }
+
+        // B. Consumo de la API REST (Sistemas Distribuidos)
+        async function procesarPeticion() {
+            const categoria = document.getElementById('categoria').value;
+            const precio = document.getElementById('precio').value;
+            const operacion = document.getElementById('operacion').value;
+            const pantalla = document.getElementById('pantalla-resultado');
+
+            if(!precio) {
+                pantalla.innerHTML = "<span class='error'>⚠️ Ingresa un precio válido</span>";
+                return;
+            }
+
+            pantalla.innerHTML = "Conectando con FastAPI... ⏳";
+
+            try {
+                // Usamos Fetch API para enviar un POST HTTP con JSON
+                const respuesta = await fetch(`http://127.0.0.1:8000/calcular?operacion=${operacion}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ categoria: categoria, precio: parseFloat(precio) }) // Serialización a JSON
+                });
+
+                if (!respuesta.ok) throw new Error("Error en el servidor");
+
+                const datos = await respuesta.json(); // Deserialización del JSON
+                
+                // Mostrar resultados
+                pantalla.innerHTML = `
+                    <strong>Operación:</strong> ${datos.operacion}<br>
+                    <strong>Resultado:</strong> $${datos.resultado} ${datos.moneda}<br>
+                    <small style="color:#aaa;">${datos.detalle}</small>
+                `;
+
+            } catch (error) {
+                pantalla.innerHTML = "<span class='error'>❌ Servidor desconectado. ¿Encendiste Uvicorn?</span>";
+            }
+        }
+    </script>
+</body>
+</html>
