@@ -1,3 +1,23 @@
+# Entornos virtuales
+mi_entorno/
+venv/
+env/
+
+# Caché y archivos compilados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Variables de entorno (Seguridad)
+.env
+
+# Archivos de configuración locales del editor
+.vscode/
+
+# Archivos ocultos del sistema operativo
+.DS_Store
+Thumbs.db
+
 # Ignorar archivos PDF
 *.pdf
 
