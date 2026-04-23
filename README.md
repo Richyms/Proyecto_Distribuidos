@@ -22,8 +22,16 @@ El proyecto está dividido en dos capas principales totalmente desacopladas para
 * **Gestión de Entornos:** `venv` (Entornos Virtuales de Python)
 
 ### Ejecución Rápida
-Para probar esta práctica en un entorno local:
-1. Activar el entorno virtual (`entorno`).
-2. Instalar librerias: python -m pip install fastapi uvicorn pydantic
-3. Levantar la API con: `uvicorn backend_api:app --reload`
-4. Desplegar el cliente frontend utilizando un servidor local (ej. *Live Server* en el puerto 5500).
+Para probar esta práctica en un entorno local, sigue estos pasos:
+**Backend**
+1. **Clonar el repositorio:**
+   ```bash
+   git clone <URL_DE_TU_REPOSITORIO>
+   cd Proyecto_Distribuidos
+2. **Activa el entorno virtual:**
+   En Windows:
+  .\entorno\Scripts\activate
+3. **Instalar Dependencias**
+  python -m pip install fastapi uvicorn pydantic
+4. **Levantar la API (Backend)**
+  uvicorn backend_api:app --reload
